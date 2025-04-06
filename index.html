@@ -57,11 +57,27 @@
       background-color: #45a049;
     }
 
-    #result {
+    #result-container {
       margin-top: 20px;
       font-size: 18px;
       color: #333;
       text-align: center;
+      position: relative;
+    }
+
+    #copyButton {
+      margin-top: 10px;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #copyButton:hover {
+      background-color: #1976D2;
     }
   </style>
 </head>
@@ -84,13 +100,18 @@
 
     <button onclick="calculate()">احسب التقييم الجديد</button>
 
-    <div id="result"></div>
-
-
+    <div id="result-container">
+      <div id="result"></div>
+      <button id="copyButton" style="display: none;" onclick="copyResult()">📋 نسخ</button>
+    </div>
   </div>
+
   <p></p>
   <p>Made for: ULG | By: 777m</p>
+
   <script>
+    let calculatedValue = "";
+
     function calculate() {
       const feedbackCount = parseInt(document.getElementById('feedbackCount').value);
       const currentRating = parseFloat(document.getElementById('currentRating').value);
@@ -99,6 +120,7 @@
 
       if (isNaN(feedbackCount) || isNaN(currentRating)) {
         document.getElementById('result').textContent = "الرجاء إدخال جميع القيم بشكل صحيح.";
+        document.getElementById('copyButton').style.display = "none";
         return;
       }
 
@@ -107,8 +129,22 @@
       const newTotalPoints = currentTotalPoints + fixedPoints;
       const newRating = newTotalPoints / feedbackCount;
 
-      document.getElementById('result').textContent =
-        `التقييم بعد التصحيح: ${newRating.toFixed(3)}`;
+      calculatedValue = newRating.toFixed(3);
+      document.getElementById('result').textContent = `التقييم بعد التصحيح: ${calculatedValue}`;
+      document.getElementById('copyButton').style.display = "inline-block";
+    }
+
+    function copyResult() {
+      if (calculatedValue) {
+        navigator.clipboard.writeText(calculatedValue).then(() => {
+          const button = document.getElementById('copyButton');
+          const originalText = button.textContent;
+          button.textContent = "✅ تم النسخ!";
+          setTimeout(() => {
+            button.textContent = originalText;
+          }, 2000);
+        });
+      }
     }
   </script>
 </body>
