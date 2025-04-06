@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مولد تقرير الرتب</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    button {
+      margin-top: 15px;
+      width: 300px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>مولد تقرير الرتب</h2>
+
+  <div class="cards">
+    <!-- Support Card -->
+    <div class="card">
+      <h3>Support</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startnum1" value="10">
+      <label>الأيديهات (كل ID في سطر)</label>
+      <textarea id="support"></textarea>
+    </div>
+
+    <!-- Trial Support Card -->
+    <div class="card">
+      <h3>Trial Support</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startnum2" value="20">
+      <label>الأيديهات (كل ID في سطر)</label>
+      <textarea id="trialSupport"></textarea>
+    </div>
+
+    <!-- Tester Support Card -->
+    <div class="card">
+      <h3>Tester Support</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startnum3" value="64">
+      <label>الأيديهات (كل ID في سطر)</label>
+      <textarea id="testerSupport"></textarea>
+    </div>
+  </div>
+
+  <button onclick="generate()">🔧 توليد التقرير</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    function generateSection(title, idsText, startNum, emoji) {
+      const ids = idsText.split('\n').map(e => e.trim()).filter(e => e);
+      if (ids.length === 0) return `\`\`${title}\`\` ${emoji} \n\n- NULL\n`;
+
+      let section = `\`\`${title}\`\` ${emoji} \n\n`;
+      ids.forEach((id, i) => {
+        section += `- <@${id}> => [S-${i + parseInt(startNum)}]\n`;
+      });
+      return section;
+    }
+
+    function generate() {
+      const support = document.getElementById('support').value;
+      const trial = document.getElementById('trialSupport').value;
+      const tester = document.getElementById('testerSupport').value;
+
+      const start1 = document.getElementById('startnum1').value;
+      const start2 = document.getElementById('startnum2').value;
+      const start3 = document.getElementById('startnum3').value;
+
+      const section1 = generateSection("Support", support, start1, ":emoji_41:");
+      const section2 = generateSection("Trial Support", trial, start2, ":emoji_41:");
+      const section3 = generateSection("Tester Support", tester, start3, ":emoji_41:");
+
+      const output = `:emoji_91:  قرار صادر من إدارة الرقابة و التفتيش بـ قبول تقديم كل من :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** @الرقابة الإداريه`;
+
+      document.getElementById('output').textContent = output;
+    }
+  </script>
+</body>
+</html>
