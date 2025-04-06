@@ -39,7 +39,7 @@
       font-weight: bold;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 8px;
       border-radius: 6px;
@@ -91,6 +91,18 @@
 <body>
   <h2>مولد تقرير الرتب</h2>
 
+  <!-- المقدمة القابلة للتعديل -->
+  <div class="card" style="margin-bottom: 20px;">
+    <label for="introText">نص المقدمة</label>
+    <select id="introText" onchange="customIntro(this.value)">
+      <option value="قبول تقديم كل من">قبول تقديم كل من</option>
+      <option value="ترشيح كل من">تحديث اكواد كل من</option>
+      <option value="اختيار كل من">ترقية كل من</option>
+      <option value="custom">مخصص...</option>
+    </select>
+    <input type="text" id="customIntroText" placeholder="أدخل نصًا مخصصًا" style="display:none; margin-top: 10px;">
+  </div>
+
   <div class="cards">
     <div class="card">
       <h3>Support</h3>
@@ -127,6 +139,15 @@
       return num < 10 ? '0' + num : num;
     }
 
+    function customIntro(value) {
+      const customInput = document.getElementById('customIntroText');
+      if (value === 'custom') {
+        customInput.style.display = 'block';
+      } else {
+        customInput.style.display = 'none';
+      }
+    }
+
     function generateSection(title, idsText, startNum, emoji) {
       const ids = idsText.split('\n').map(e => e.trim()).filter(e => e);
       if (ids.length === 0) return `\`\`${title}\`\` ${emoji} \n\n- NULL\n`;
@@ -134,7 +155,7 @@
       let section = `\`\`${title}\`\` ${emoji} \n\n`;
       ids.forEach((id, i) => {
         let number = formatNumber(i + parseInt(startNum));
-		number = String(number).padStart(2, '0');
+        number = String(number).padStart(2, '0');
         section += `- <@${id}> => [S-${number}]\n`;
       });
       return section;
@@ -149,15 +170,17 @@
       const start2 = document.getElementById('startnum2').value;
       const start3 = document.getElementById('startnum3').value;
 
+      const introSelect = document.getElementById('introText').value;
+      const customIntro = document.getElementById('customIntroText').value;
+      const introText = introSelect === 'custom' && customIntro.trim() !== "" ? customIntro : introSelect;
+
       const section1 = generateSection("Support", support, start1, ":emoji_41:");
       const section2 = generateSection("Trial Support", trial, start2, ":emoji_41:");
       const section3 = generateSection("Tester Support", tester, start3, ":emoji_41:");
 
-      const output = `:emoji_91:  قرار صادر من إدارة الرقابة و التفتيش بـ قبول تقديم كل من :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** <@&1039498960777248808>`;
+      const output = `:emoji_91:  قرار صترة الرقابة و التفتيش بـ ${introText} :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** <@&1039498960777248808>`;
 
       document.getElementById('output').textContent = output;
-
-      // Show copy button only
       document.getElementById('copyBtn').style.display = "block";
     }
 
