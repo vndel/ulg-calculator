@@ -68,6 +68,11 @@
       background-color: #45a049;
     }
 
+    #copyBtn {
+      display: none;
+      background-color: #2196F3;
+    }
+
     pre {
       white-space: pre-wrap;
       background: #fff;
@@ -114,6 +119,7 @@
   </div>
 
   <button onclick="generate()">🔧 توليد التقرير</button>
+  <button id="copyBtn" onclick="copyText()">📋 نسخ</button>
 
   <pre id="output"></pre>
 
@@ -142,9 +148,30 @@
       const section2 = generateSection("Trial Support", trial, start2, ":emoji_41:");
       const section3 = generateSection("Tester Support", tester, start3, ":emoji_41:");
 
-      const output = `:emoji_91:  قرار صادر من إدارة الرقابة و التفتيش بـ قبول تقديم كل من :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** @الرقابة الإداريه`;
-
+      const output = `:emoji_91:  قرار صادر من إدارة الرقابة و التفتيش بـ قبول تقديم كل من :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** <@&1039498960777248808>`;
       document.getElementById('output').textContent = output;
+
+      // Show copy button
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.style.display = "block";
+      copyBtn.textContent = "📋 نسخ";
+      copyBtn.style.backgroundColor = "#2196F3";
+    }
+
+    function copyText() {
+      const text = document.getElementById('output').textContent;
+      const btn = document.getElementById('copyBtn');
+
+      if (!text.trim()) return;
+
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = "✅ تم النسخ";
+        btn.style.backgroundColor = "#4CAF50";
+        setTimeout(() => {
+          btn.textContent = "📋 نسخ";
+          btn.style.backgroundColor = "#2196F3";
+        }, 3000);
+      });
     }
   </script>
 </body>
