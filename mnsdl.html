@@ -56,7 +56,6 @@
       margin-top: 15px;
       width: 300px;
       padding: 10px;
-      background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 6px;
@@ -65,7 +64,11 @@
     }
 
     button:hover {
-      background-color: #45a049;
+      opacity: 0.9;
+    }
+
+    #generateBtn {
+      background-color: #4CAF50;
     }
 
     #copyBtn {
@@ -83,14 +86,12 @@
       max-width: 900px;
       margin-top: 20px;
     }
-
   </style>
 </head>
 <body>
   <h2>مولد تقرير الرتب</h2>
 
   <div class="cards">
-    <!-- Support Card -->
     <div class="card">
       <h3>Support</h3>
       <label>بداية الترقيم</label>
@@ -99,7 +100,6 @@
       <textarea id="support"></textarea>
     </div>
 
-    <!-- Trial Support Card -->
     <div class="card">
       <h3>Trial Support</h3>
       <label>بداية الترقيم</label>
@@ -108,7 +108,6 @@
       <textarea id="trialSupport"></textarea>
     </div>
 
-    <!-- Tester Support Card -->
     <div class="card">
       <h3>Tester Support</h3>
       <label>بداية الترقيم</label>
@@ -118,19 +117,24 @@
     </div>
   </div>
 
-  <button onclick="generate()">🔧 توليد التقرير</button>
+  <button id="generateBtn" onclick="generate()">🔧 توليد التقرير</button>
   <button id="copyBtn" onclick="copyText()">📋 نسخ</button>
 
   <pre id="output"></pre>
 
   <script>
+    function formatNumber(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
     function generateSection(title, idsText, startNum, emoji) {
       const ids = idsText.split('\n').map(e => e.trim()).filter(e => e);
       if (ids.length === 0) return `\`\`${title}\`\` ${emoji} \n\n- NULL\n`;
 
       let section = `\`\`${title}\`\` ${emoji} \n\n`;
       ids.forEach((id, i) => {
-        section += `- <@${id}> => [S-${i + parseInt(startNum)}]\n`;
+        const number = formatNumber(i + parseInt(startNum));
+        section += `- <@${id}> => [S-${number}]\n`;
       });
       return section;
     }
@@ -149,13 +153,11 @@
       const section3 = generateSection("Tester Support", tester, start3, ":emoji_41:");
 
       const output = `:emoji_91:  قرار صادر من إدارة الرقابة و التفتيش بـ قبول تقديم كل من :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** <@&1039498960777248808>`;
+
       document.getElementById('output').textContent = output;
 
-      // Show copy button
-      const copyBtn = document.getElementById('copyBtn');
-      copyBtn.style.display = "block";
-      copyBtn.textContent = "📋 نسخ";
-      copyBtn.style.backgroundColor = "#2196F3";
+      // Show copy button only
+      document.getElementById('copyBtn').style.display = "block";
     }
 
     function copyText() {
