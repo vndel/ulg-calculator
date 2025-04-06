@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <title>حساب التقييم بعد التصحيح</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>حساب التقييم بعد التصحيح</h1>
+  <p>أدخل البيانات التالية لحساب التقييم الجديد بعد التصحيح:</p>
+  <div class="container">
+    <label>عدد التقييمات الكلي</label>
+    <input type="number" id="feedbackCount" placeholder="مثال: 923">
+
+    <label>التقييم الحالي</label>
+    <input type="number" step="0.01" id="currentRating" placeholder="مثال: 4.5">
+
+    <label>عدد التقييمات من 1 إلى 5</label>
+    <input type="number" id="wrong1to5" placeholder="مثال: 32">
+
+    <label>عدد التقييمات من 2 إلى 5</label>
+    <input type="number" id="wrong2to5" placeholder="مثال: 0">
+
+    <button onclick="calculate()">احسب التقييم الجديد</button>
+
+    <div id="result"></div>
+
+
+  </div>
+  <p></p>
+  <p>Made for: ULG | By: 777m</p>
+  <script>
+    function calculate() {
+      const feedbackCount = parseInt(document.getElementById('feedbackCount').value);
+      const currentRating = parseFloat(document.getElementById('currentRating').value);
+      const wrong1to5 = parseInt(document.getElementById('wrong1to5').value);
+      const wrong2to5 = parseInt(document.getElementById('wrong2to5').value);
+
+      if (isNaN(feedbackCount) || isNaN(currentRating)) {
+        document.getElementById('result').textContent = "الرجاء إدخال جميع القيم بشكل صحيح.";
+        return;
+      }
+
+      const currentTotalPoints = currentRating * feedbackCount;
+      const fixedPoints = (wrong1to5 * 4) + (wrong2to5 * 3);
+      const newTotalPoints = currentTotalPoints + fixedPoints;
+      const newRating = newTotalPoints / feedbackCount;
+
+      document.getElementById('result').textContent =
+        `التقييم بعد التصحيح: ${newRating.toFixed(3)}`;
+    }
+  </script>
+</body>
+
+</html>
