@@ -133,7 +133,8 @@
 
       let section = `\`\`${title}\`\` ${emoji} \n\n`;
       ids.forEach((id, i) => {
-        const number = formatNumber(i + parseInt(startNum));
+        let number = formatNumber(i + parseInt(startNum));
+		number = String(number).padStart(2, '0');
         section += `- <@${id}> => [S-${number}]\n`;
       });
       return section;
