@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تنسيق تحذيرات البقالات</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f7f9fb;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 26px;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      width: 320px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #444;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.2s;
+      margin-bottom: 15px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 60px;
+      height: 30px;
+    }
+
+    .toggle-switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #4CAF50;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(28px);
+    }
+
+    .switch-label {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      color: white;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 160px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .output {
+      margin-top: 30px;
+      background: #2c2f36;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 700px;
+      color: white;
+      white-space: pre-wrap;
+      text-align: right;
+      font-size: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      overflow-wrap: break-word;
+    }
+
+    .message-line {
+      margin: 8px 0;
+    }
+
+    .line-break {
+      margin-top: 15px;
+      border-top: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+
+    .bold {
+      font-weight: bold;
+      color: #00b0ff;
+    }
+
+    .gray {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h2>⚠️ نظام تحذيرات البقالات</h2>
+  <div class="cards">
+    <div class="card">
+      <label>قائمة المنشنات:</label>
+      <textarea id="mentions" placeholder="<@123>\n<@456>"></textarea>
+    </div>
+    <div class="card">
+      <label>قائمة الأسباب:</label>
+      <textarea id="reasons" placeholder="بقالة 1 (إهمال)\nبقالة 2 (مهملة تمامًا)"></textarea>
+    </div>
+    <div class="card">
+      <label>موقع البقالة (اختياري):</label>
+      <textarea id="locations" placeholder="38\n43"></textarea>
+      <div class="switch-label">
+        <label>تفعيل الفلتر:</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="filter">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="card">
+      <label>المهلة (سيتم تطبيقها على الجميع):</label>
+      <textarea id="deadline" placeholder="⏰ مهلة حتى الساعة 6م مكة / 5م مصر (اليوم).">⏰ مهلة حتى الساعة 6م مكة / 5م مصر (اليوم).</textarea>
+    </div>
+  </div>
+
+  <button onclick="formatMentions()">🎯 توليد الرسالة</button>
+  <button onclick="copyResult()">📋 نسخ</button>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    function formatMentions() {
+      const mentions = document.getElementById("mentions").value.trim().split("\n");
+      const reasons = document.getElementById("reasons").value.trim().split("\n");
+      const locations = document.getElementById("locations").value.trim().split("\n");
+      const filter = document.getElementById("filter").checked;
+      const deadline = document.getElementById("deadline").value.trim();
+
+      let out = "";
+
+      // Loop through all mentions
+      for (let i = 0; i < mentions.length; i++) {
+        const mention = mentions[i]?.trim();
+        const reason = reasons[i]?.trim();
+        const location = locations[i]?.trim();
+
+        // Check if we should apply the filter (skip if reason is empty when filter is on)
+        if (filter && (!reason || reason === '')) continue;
+
+        out += `-# 🔔 تحذير لـ ${mention}\n`;  // Mentioning user
+        if (reason) out += `- **السبب**: ${reason}\n`;  // Reason
+        if (location) out += `  - 📍 **موقع**: ${location}\n`;  // Location
+        out += `- ⚠️ تكرار التنبيه قد يؤدي لسحب البقالة.\n`;  // Warning
+        out += `- ${deadline} -\n`;  // Deadline from input field
+        out += `━━━━━━━━━━━━━━━\n`;  // Separator line
+      }
+
+      // Display the formatted message
+      document.getElementById("output").textContent = out.trim();
+    }
+
+    function copyResult() {
+      const out = document.getElementById("output").textContent;
+      navigator.clipboard.writeText(out);
+      alert("📋 تم نسخ الرسائل بنجاح!");
+    }
+  </script>
+</body>
+</html>
