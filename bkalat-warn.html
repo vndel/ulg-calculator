@@ -178,16 +178,16 @@
   <h2>⚠️ نظام تحذيرات البقالات</h2>
   <div class="cards">
     <div class="card">
-      <label>قائمة المنشنات:</label>
+      <label>ايديهات:</label>
       <textarea id="mentions" placeholder="<@123>\n<@456>"></textarea>
-    </div>
-    <div class="card">
-      <label>قائمة الأسباب:</label>
-      <textarea id="reasons" placeholder="بقالة 1 (إهمال)\nبقالة 2 (مهملة تمامًا)"></textarea>
     </div>
     <div class="card">
       <label>موقع البقالة (اختياري):</label>
       <textarea id="locations" placeholder="38\n43"></textarea>
+    </div>
+    <div class="card">
+      <label>قائمة الأسباب:</label>
+      <textarea id="reasons" placeholder="بقالة 1 (إهمال)\nبقالة 2 (مهملة تمامًا)"></textarea>
       <div class="switch-label">
         <label>تفعيل الفلتر:</label>
         <label class="toggle-switch">
@@ -197,8 +197,23 @@
       </div>
     </div>
     <div class="card">
+      <label>قائمة الأسباب: لبعد الفحص</label>
+      <textarea id="reasonsSec" placeholder="بقالة 1 (إهمال)\nبقالة 2 (مهملة تمامًا)"></textarea>
+      <div class="switch-label">
+        <label>تفعيل الفلتر:</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="filterSec">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="card">
       <label>المهلة (سيتم تطبيقها على الجميع):</label>
       <textarea id="deadline" placeholder="⏰ مهلة حتى الساعة 6م مكة / 5م مصر (اليوم).">⏰ مهلة حتى الساعة 6م مكة / 5م مصر (اليوم).</textarea>
+    </div>
+    <div class="card">
+      <label>رسالة السحب للاشخاص المهملين مرتين</label>
+      <textarea id="takeout" placeholder="⭕ سيتم سحب البقالة التالية بشكل تلقائي.">⭕ سيتم سحب البقالة التالية بشكل تلقائي.</textarea>
     </div>
   </div>
 
@@ -208,35 +223,53 @@
   <div class="output" id="output"></div>
 
   <script>
-    function formatMentions() {
-      const mentions = document.getElementById("mentions").value.trim().split("\n");
-      const reasons = document.getElementById("reasons").value.trim().split("\n");
-      const locations = document.getElementById("locations").value.trim().split("\n");
-      const filter = document.getElementById("filter").checked;
-      const deadline = document.getElementById("deadline").value.trim();
+function formatMentions() {
+  const mentions = document.getElementById("mentions").value.trim().split("\n");
+  const reasons = document.getElementById("reasons").value.trim().split("\n");
+  const reasonsSec = document.getElementById("reasonsSec").value.trim().split("\n");
+  const locations = document.getElementById("locations").value.trim().split("\n");
+  const filter = document.getElementById("filter").checked;
+  const filterSec = document.getElementById("filterSec").checked;
+  const deadline = document.getElementById("deadline").value.trim();
+  const takeout = document.getElementById("takeout").value.trim();
 
-      let out = "";
+  let out = "";
 
-      // Loop through all mentions
-      for (let i = 0; i < mentions.length; i++) {
-        const mention = mentions[i]?.trim();
-        const reason = reasons[i]?.trim();
-        const location = locations[i]?.trim();
+  for (let i = 0; i < mentions.length; i++) {
+    const mention = mentions[i]?.trim();
+    const reason = reasons[i]?.trim();
+    const reasonSec = reasonsSec[i]?.trim();
+    const location = locations[i]?.trim();
 
-        // Check if we should apply the filter (skip if reason is empty when filter is on)
-        if (filter && (!reason || reason === '')) continue;
+    // لو ما عنده سبب جديد ولا قديم وتفعيل الفلتر، نطنشه
+    if (filter && (!reason && !reasonSec)) continue;
 
-        out += `-# 🔔 تحذير لـ ${mention}\n`;  // Mentioning user
-        if (reason) out += `- **السبب**: ${reason}\n`;  // Reason
-        if (location) out += `  - 📍 **موقع**: ${location}\n`;  // Location
-        out += `- ⚠️ تكرار التنبيه قد يؤدي لسحب البقالة.\n`;  // Warning
-        out += `- ${deadline} -\n`;  // Deadline from input field
-        out += `━━━━━━━━━━━━━━━\n`;  // Separator line
-      }
+    // لو السبب ما تغير أبدًا (نفس السبب بالضبط)، وتفعيل filterSec، نطنشه
+    if (filterSec && reason && reasonSec && reason === reasonSec) continue;
 
-      // Display the formatted message
-      document.getElementById("output").textContent = out.trim();
+    // لو مافي سبب جديد، نطنشه (مافي تحذير اليوم)
+    if (!reasonSec) continue;
+
+    out += `-# 🔔 تحذير لـ ${mention}\n`;
+    out += `- **السبب**: ${reasonSec || reason}\n`;
+
+    if (location) out += `  - 📍 **موقع**: ${location}\n`;
+
+    // تحذير خاص إذا السبب قديم + تغير عن اليوم
+    if (reason && reasonSec && reason !== reasonSec && filterSec) {
+      out += `- ${takeout}\n`;  // سحب البقالة
+    } else {
+      out += `- ⚠️ تكرار التنبيه قد يؤدي لسحب البقالة.\n`;  // تحذير عادي
+	  out += `- ${deadline}\n`;
     }
+
+    out += `━━━━━━━━━━━━━━━\n`;
+  }
+
+  document.getElementById("output").textContent = out.trim();
+}
+
+
 
     function copyResult() {
       const out = document.getElementById("output").textContent;
