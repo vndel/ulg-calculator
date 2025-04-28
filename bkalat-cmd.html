@@ -177,11 +177,10 @@
 <body>
   <h2>كوماند تلقائي</h2>
   <div class="cards">
+
     <div class="card">
       <label>ايديهات:</label>
       <textarea id="ids" placeholder="1\n2"></textarea>
-    </div>
-    <div class="card">
       <label>موقع البقالة (اختياري):</label>
       <textarea id="locations" placeholder="38\n43"></textarea>
     </div>
@@ -192,24 +191,64 @@
       <label>Item Type</label>
       <input type="number" id="itemtype" value="1">
       <label>Time</label>
-      <input type="number" id="timer" value="1">
+      <input type="number" id="timer" value="4">
       <label>Days</label>
       <input type="number" id="days" value="1">
     </div>
-
-  <button onclick="formatMentions()">🎯 توليد الرسالة</button>
-  <button onclick="copyResult()">📋 نسخ</button>
-
+    <div class="card">
+      <label>مواقع البقالة</label>
+	  
+    <select id="introText" onchange="customIntro(this.value)">
+      <option value="بقالة">بقالة</option>
+      <option value="ثلاجة">ثلاجة</option>
+      <option value="custom">مخصص...</option>
+    </select>
+    <input type="text" id="customIntroText" placeholder="أدخل نصًا مخصصًا" style="display:none; margin-top: 10px;">
+	  
+		<button onclick="formatMentions()">🎯 توليد الرسالة</button>
+		<button onclick="copyResult()">📋 نسخ</button>
+    </div>
   <div class="output" id="output"></div>
 
   <script>
+  
+    function customIntro(value) {
+      const customInput = document.getElementById('customIntroText');
+      if (value === 'custom') {
+        customInput.style.display = 'block';
+      } else {
+        customInput.style.display = 'none';
+      }
+    }
+  
 function formatMentions() {
+
   const ids = document.getElementById("ids").value.trim().split("\n");
   const locations = document.getElementById("locations").value.trim().split("\n");
   const timer = document.getElementById('timer').value;
+  
+  const introSelect = document.getElementById('introText').value;
+  const customIntro = document.getElementById('customIntroText').value;
+  const placeType = introSelect === 'custom' && customIntro.trim() !== "" ? customIntro : introSelect;
+  
+	if (placeType == "بقالة") {
+		document.getElementById("itemtype").value = 1;
+		document.getElementById("price").value = 2000000;
+		document.getElementById("days").value = 14;
+	} else if (placeType == "ثلاجة") {
+		document.getElementById("itemtype").value = 1;
+		document.getElementById("price").value = 500000;
+		document.getElementById("days").value = 21;
+	}
+  
+
   const days = document.getElementById("days").value;
   const price = document.getElementById("price").value;
   const itemtype = document.getElementById("itemtype").value;
+
+
+
+
 
 
   let out = "";
@@ -218,7 +257,7 @@ function formatMentions() {
     const id = ids[i]?.trim();
     const location = locations[i]?.trim();
 
-    out += `/createauction price:${price} item:${location} itemtype:${itemtype} itemid:${id} time:${timer} days:${days} image:\n`;
+    out += `/createauction price:${price} item:${placeType} في منطقة الـ ${location} itemtype:${itemtype} itemid:${id} time:${timer} days:${days} image:\n`;
 
   }
 
