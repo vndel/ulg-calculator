@@ -2,202 +2,231 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>مولد تقرير الرتب</title>
+  <title>مولد الأوامر وتقارير الرتب</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-    }
-
-    h2 {
-      color: #333;
-    }
-
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 20px;
     }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto auto;
+      grid-gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      grid-template-areas:
+        "supportIn trialIn testerIn"
+        "supportOut trialOut testerOut"
+        "reportGen reportGen reportGen";
+    }
+    .supportIn   { grid-area: supportIn; }
+    .trialIn     { grid-area: trialIn; }
+    .testerIn    { grid-area: testerIn; }
+    .supportOut  { grid-area: supportOut; }
+    .trialOut    { grid-area: trialOut; }
+    .testerOut   { grid-area: testerOut; }
+    .reportGen   { grid-area: reportGen; }
 
     .card {
-      background: white;
-      padding: 20px;
+      background: #fff;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
-
+    h2, h3 {
+      margin: 0 0 10px;
+      color: #2c3e50;
+    }
     label {
-      display: block;
-      margin: 10px 0 5px;
+      margin-top: 10px;
       font-weight: bold;
+      color: #555;
     }
-
-    input, textarea, select {
-      width: 100%;
+    textarea, input[type="number"] {
+      margin-top: 5px;
       padding: 8px;
-      border-radius: 6px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
+      border-radius: 6px;
       font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
     }
-
-    textarea {
-      height: 100px;
-    }
-
-    button {
+    textarea { resize: vertical; height: 60px; }
+    .buttons {
       margin-top: 15px;
-      width: 300px;
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      flex: 1;
       padding: 10px;
-      color: white;
       border: none;
       border-radius: 6px;
+      font-size: 15px;
       cursor: pointer;
-      font-size: 16px;
+      color: #fff;
+      transition: opacity 0.2s;
     }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    #generateBtn {
-      background-color: #4CAF50;
-    }
-
-    #copyBtn {
-      display: none;
-      background-color: #2196F3;
-    }
-
+    button:hover { opacity: 0.9; }
+    .generate { background: #27ae60; }
+    .copy     { background: #2980b9; }
     pre {
-      white-space: pre-wrap;
-      background: #fff;
+      margin-top: 10px;
+      background: #ecf0f1;
       padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 900px;
-      margin-top: 20px;
+      border-radius: 8px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 200px;
     }
   </style>
 </head>
 <body>
-  <h2>مولد تقرير الرتب</h2>
+  <div class="grid">
 
-  <!-- المقدمة القابلة للتعديل -->
-  <div class="card" style="margin-bottom: 20px;">
-    <label for="introText">نص المقدمة</label>
-    <select id="introText" onchange="customIntro(this.value)">
-      <option value="قبول تقديم كل من">قبول تقديم كل من</option>
-      <option value="تحديث اكواد كل من">تحديث اكواد كل من</option>
-      <option value="ترقية كل من">ترقية كل من</option>
-      <option value="custom">مخصص...</option>
-    </select>
-    <input type="text" id="customIntroText" placeholder="أدخل نصًا مخصصًا" style="display:none; margin-top: 10px;">
+    <!-- Support Input -->
+    <div class="card supportIn">
+      <h3>🛡️ Support — إدخال</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startSupport" value="1">
+      <label>Discord IDs (سطر لكل ID)</label>
+      <textarea id="supportIDs"></textarea>
+      <label>Account Names (سطر لكل اسم حساب)</label>
+      <textarea id="supportAccounts"></textarea>
+      <label>Character Names (سطر لكل اسم)</label>
+      <textarea id="supportNames"></textarea>
+      <label>Serials (سطر لكل سريال)</label>
+      <textarea id="supportSerials"></textarea>
+      <div class="buttons">
+        <button class="generate" onclick="generateAssignment('support')">🔧 توليد</button>
+        <button class="copy" onclick="copyAssignment('outputSupport')">📋 نسخ</button>
+      </div>
+    </div>
+
+    <!-- Trial Support Input -->
+    <div class="card trialIn">
+      <h3>🛡️ Trial Support — إدخال</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startTrial" value="36">
+      <label>Discord IDs</label>
+      <textarea id="trialIDs"></textarea>
+      <label>Account Names</label>
+      <textarea id="trialAccounts"></textarea>
+      <label>Character Names</label>
+      <textarea id="trialNames"></textarea>
+      <label>Serials</label>
+      <textarea id="trialSerials"></textarea>
+      <div class="buttons">
+        <button class="generate" onclick="generateAssignment('trial')">🔧 توليد</button>
+        <button class="copy" onclick="copyAssignment('outputTrial')">📋 نسخ</button>
+      </div>
+    </div>
+
+    <!-- Tester Support Input -->
+    <div class="card testerIn">
+      <h3>🛡️ Tester Support — إدخال</h3>
+      <label>بداية الترقيم</label>
+      <input type="number" id="startTester" value="58">
+      <label>Discord IDs</label>
+      <textarea id="testerIDs"></textarea>
+      <label>Account Names</label>
+      <textarea id="testerAccounts"></textarea>
+      <label>Character Names</label>
+      <textarea id="testerNames"></textarea>
+      <label>Serials</label>
+      <textarea id="testerSerials"></textarea>
+      <div class="buttons">
+        <button class="generate" onclick="generateAssignment('tester')">🔧 توليد</button>
+        <button class="copy" onclick="copyAssignment('outputTester')">📋 نسخ</button>
+      </div>
+    </div>
+
+    <!-- Support Output -->
+    <div class="card supportOut">
+      <h3>🛡️ Support — الناتج</h3>
+      <pre id="outputSupport"></pre>
+    </div>
+
+    <!-- Trial Output -->
+    <div class="card trialOut">
+      <h3>🛡️ Trial Support — الناتج</h3>
+      <pre id="outputTrial"></pre>
+    </div>
+
+    <!-- Tester Output -->
+    <div class="card testerOut">
+      <h3>🛡️ Tester Support — الناتج</h3>
+      <pre id="outputTester"></pre>
+    </div>
+
+    <!-- مولد تقرير الرقابة الموحد -->
+    <div class="card reportGen">
+      <h2>📋 تقرير الرقابة الموحد</h2>
+      <p>اضغط على الزر أدناه لتوليد تقرير الرقابة بناءً على بيانات كل الرتب.</p>
+      <div class="buttons">
+        <button class="generate" onclick="generateReport()">🔧 تقرير</button>
+        <button class="copy" onclick="copyReport()">📋 نسخ</button>
+      </div>
+      <pre id="outputReport"></pre>
+    </div>
+
   </div>
-
-  <div class="cards">
-    <div class="card">
-      <h3>Support</h3>
-      <label>بداية الترقيم</label>
-      <input type="number" id="startnum1" value="1">
-      <label>الأيديهات (كل ID في سطر)</label>
-      <textarea id="support"></textarea>
-    </div>
-
-    <div class="card">
-      <h3>Trial Support</h3>
-      <label>بداية الترقيم</label>
-      <input type="number" id="startnum2" value="36">
-      <label>الأيديهات (كل ID في سطر)</label>
-      <textarea id="trialSupport"></textarea>
-    </div>
-
-    <div class="card">
-      <h3>Tester Support</h3>
-      <label>بداية الترقيم</label>
-      <input type="number" id="startnum3" value="58">
-      <label>الأيديهات (كل ID في سطر)</label>
-      <textarea id="testerSupport"></textarea>
-    </div>
-  </div>
-
-  <button id="generateBtn" onclick="generate()">🔧 توليد التقرير</button>
-  <button id="copyBtn" onclick="copyText()">📋 نسخ</button>
-
-  <pre id="output"></pre>
 
   <script>
-    function formatNumber(num) {
-      return num < 10 ? '0' + num : num;
-    }
-
-    function customIntro(value) {
-      const customInput = document.getElementById('customIntroText');
-      if (value === 'custom') {
-        customInput.style.display = 'block';
-      } else {
-        customInput.style.display = 'none';
+    function generateAssignment(role) {
+      let roleID = 0;
+      if (role === 'support') roleID = 3;
+      else if (role === 'trial') roleID = 2;
+      else if (role === 'tester') roleID = 1;
+      const start = parseInt(document.getElementById('start' + capitalize(role)).value);
+      const ids = document.getElementById(role + 'IDs').value.trim().split('\n').filter(Boolean);
+      const names = document.getElementById(role + 'Names').value.trim().split('\n').filter(Boolean);
+      const accounts = document.getElementById(role + 'Accounts').value.trim().split('\n').filter(Boolean);
+      const serials = document.getElementById(role + 'Serials').value.trim().split('\n').filter(Boolean);
+      const count = Math.max(ids.length, names.length, accounts.length, serials.length);
+      let out = `ulg_format ${roleID}\n`;
+      for (let i = 0; i < count; i++) {
+        const id = ids[i] || '';
+        const name = names[i] ? ` [S-${String(start + i).padStart(2, '0')}] ${names[i]}` : '';
+        const acct = accounts[i] ? ` | Account: ${accounts[i]}` : '';
+        const ser = serials[i] ? ` | Serial: ${serials[i]}` : '';
+        out += id + name + acct + ser + '\n';
       }
+      document.getElementById('output' + capitalize(role)).textContent = out;
     }
-
-    function generateSection(title, idsText, startNum, emoji) {
-      const ids = idsText.split('\n').map(e => e.trim()).filter(e => e);
-      if (ids.length === 0) return `\`\`${title}\`\` ${emoji} \n\n- NULL\n`;
-
-      let section = `\`\`${title}\`\` ${emoji} \n\n`;
-      ids.forEach((id, i) => {
-        let number = formatNumber(i + parseInt(startNum));
-        number = String(number).padStart(2, '0');
-        section += `- <@${id}> => [S-${number}]\n`;
-      });
-      return section;
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function copyAssignment(id) {
+      navigator.clipboard.writeText(document.getElementById(id).textContent);
+      alert('✅ تم النسخ!');
     }
-
-    function generate() {
-      const support = document.getElementById('support').value;
-      const trial = document.getElementById('trialSupport').value;
-      const tester = document.getElementById('testerSupport').value;
-
-      const start1 = document.getElementById('startnum1').value;
-      const start2 = document.getElementById('startnum2').value;
-      const start3 = document.getElementById('startnum3').value;
-
-      const introSelect = document.getElementById('introText').value;
-      const customIntro = document.getElementById('customIntroText').value;
-      const introText = introSelect === 'custom' && customIntro.trim() !== "" ? customIntro : introSelect;
-
-      const section1 = generateSection("Support", support, start1, ":emoji_41:");
-      const section2 = generateSection("Trial Support", trial, start2, ":emoji_41:");
-      const section3 = generateSection("Tester Support", tester, start3, ":emoji_41:");
-
-      const output = `:emoji_91:  قرار صترة الرقابة و التفتيش بـ ${introText} :- \n\n${section1}\n${section2}\n${section3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29:  ** <@&1039498960777248808>`;
-
-      document.getElementById('output').textContent = output;
-      document.getElementById('copyBtn').style.display = "block";
+    function formatNum(n) { return String(n).padStart(2, '0'); }
+    function genSection(title, field, startField) {
+      const start = parseInt(document.getElementById(startField).value);
+      const ids = document.getElementById(field + 'IDs').value.trim().split('\n').filter(Boolean);
+      if (!ids.length) return `\`\`${title}\`\` :emoji_41:\n\n- NULL\n`;
+      let s = `\`\`${title}\`\` :emoji_41:\n\n`;
+      ids.forEach((id, i) => { s += `- <@${id}> => [S-${formatNum(start + i)}]\n`; });
+      return s;
     }
-
-    function copyText() {
-      const text = document.getElementById('output').textContent;
-      const btn = document.getElementById('copyBtn');
-
-      if (!text.trim()) return;
-
-      navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = "✅ تم النسخ";
-        btn.style.backgroundColor = "#4CAF50";
-        setTimeout(() => {
-          btn.textContent = "📋 نسخ";
-          btn.style.backgroundColor = "#2196F3";
-        }, 3000);
-      });
+    function generateReport() {
+      const s1 = genSection('Support', 'support', 'startSupport');
+      const s2 = genSection('Trial Support', 'trial', 'startTrial');
+      const s3 = genSection('Tester Support', 'tester', 'startTester');
+      const out = `:emoji_91: قرار صادر الرقابة و التفتيش بـ ${new Date().toLocaleDateString('ar-EG')} :-\n\n${s1}\n${s2}\n${s3}\n** الرقابة والتفتيش - الدعم الفني :emoji_29: ** <@&1039498960777248808>`;
+      document.getElementById('outputReport').textContent = out;
+    }
+    function copyReport() {
+      navigator.clipboard.writeText(document.getElementById('outputReport').textContent);
+      alert('✅ تقرير الرقابة نُسخ!');
     }
   </script>
 </body>
